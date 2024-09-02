@@ -1,11 +1,13 @@
 # spotify-shuffle
 
-- `pip install requirements.txt
+- `pip install requirements.txt`
 
-> - ```
-> > python shuffle.py --help
+- running
+
+> ```
+> > python sync.py --help
 > 
-> Usage: shuffle.py [OPTIONS] COMMAND [ARGS]...
+> Usage: sync.py [OPTIONS] COMMAND [ARGS]...
 > 
 > Options:
 >   --help  Show this message and exit.
