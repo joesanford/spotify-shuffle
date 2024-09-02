@@ -1,17 +1,15 @@
 import os
 import random
 
-import spotipy
+from spotipy import Spotify
 from spotipy.oauth2 import SpotifyOAuth
 
 
-CLIENT_ID = os.getenv('SPOTIFY_CLIENT_ID')
-CLIENT_SECRET = os.getenv('SPOTIFY_SECRET')
 REDIRECT_URI = 'http://127.0.0.1:8888'
 CHUNK_SIZE = 100
 
 
-def init_sp() -> spotipy.Spotify:
+def init_sp() -> Spotify:
     sp_oauth=SpotifyOAuth(
         client_id=CLIENT_ID,
         client_secret=CLIENT_SECRET,
@@ -22,10 +20,10 @@ def init_sp() -> spotipy.Spotify:
 
     token_info = sp_oauth.get_cached_token()
     
-    if not token_info or sp_oauth.is_token_expired(token_info):
+    if sp_oauth.is_token_expired(token_info):
         token_info = sp_oauth.refresh_access_token(token_info['refresh_token'])
 
-    sp = spotipy.Spotify(auth=token_info['access_token'])
+    sp = Spotify(auth=token_info['access_token'])
 
     return sp
 
@@ -37,7 +35,7 @@ def print_progress(songs: list, res):
         print('100% fetched')
 
 
-def get_saved_tracks(sp: spotipy.Spotify) -> list:
+def get_saved_tracks(sp: Spotify) -> list:
     print('fetching saved tracks')
     songs = []
     offset = 0
@@ -55,7 +53,7 @@ def get_saved_tracks(sp: spotipy.Spotify) -> list:
     return songs
 
 
-def get_playlist_tracks(sp: spotipy.Spotify, playlist: str) -> list:
+def get_playlist_tracks(sp: Spotify, playlist: str) -> list:
     print('fetching playlist tracks')
     songs = []
     offset = 0
@@ -73,7 +71,8 @@ def get_playlist_tracks(sp: spotipy.Spotify, playlist: str) -> list:
     return songs
 
 
-def sync_playlists(sp: spotipy.Spotify, saved_tracks: list, playlist_tracks: list):
+def sync_playlists(sp: Spotify, saved_tracks: list, playlist_tracks: list, destination_playlist: str):
+    print('syncing playlists')
     songs_to_add = [t for t in saved_tracks if t not in playlist_tracks]
     songs_to_remove = [t for t in playlist_tracks if t not in saved_tracks]
 
@@ -81,14 +80,14 @@ def sync_playlists(sp: spotipy.Spotify, saved_tracks: list, playlist_tracks: lis
     print(f'{len(songs_to_remove)} songs to remove')
 
     if songs_to_add:
-        sp.playlist_add_items(PLAYLIST_ID, songs_to_add)
+        sp.playlist_add_items(destination_playlist, songs_to_add)
     if songs_to_remove:
-        sp.playlist_remove_all_occurrences_of_items(PLAYLIST_ID, songs_to_remove)
+        sp.playlist_remove_all_occurrences_of_items(destination_playlist, songs_to_remove)
 
     return
 
 
-def shuffle_playlist(sp: spotipy.Spotify, tracks: list, playlist: str):
+def shuffle_playlist(sp: Spotify, tracks: list, playlist: str):
     print('shuffling playlist')
     random.shuffle(tracks)
 
