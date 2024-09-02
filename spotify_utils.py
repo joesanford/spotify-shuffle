@@ -4,7 +4,8 @@ import random
 from spotipy import Spotify
 from spotipy.oauth2 import SpotifyOAuth
 
-
+CLIENT_ID = os.getenv('SPOTIFY_CLIENT_ID')
+CLIENT_SECRET = os.getenv('SPOTIFY_SECRET')
 REDIRECT_URI = 'http://127.0.0.1:8888'
 CHUNK_SIZE = 100
 
